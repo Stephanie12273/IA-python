@@ -23,6 +23,15 @@ for i, col in enumerate(col_num):
     ax[i].set_xticklabels(ax[i].get_xticks(), rotation=90)  # Rotar las etiquetas del eje x
 plt.show()
 #grafico de barras para conocer comportamiento de Agregacion al carrito y compra de producto
+col_num1=['Agregación al carrito','Compra del producto']
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16,8))  # Ajustar el tamaño de la figura
+fig.subplots_adjust(hspace=0.5)
+for i, col in enumerate(col_num1):
+    sns.countplot(x=col, data=data, ax=ax[i])
+    ax[i].set_title(col)
+    ax[i].tick_params(axis='x', labelrotation=90)  # Rotar las etiquetas del eje x
+plt.show()
+
 
 
 
