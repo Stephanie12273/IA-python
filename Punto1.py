@@ -31,6 +31,17 @@ for i, col in enumerate(col_num1):
     ax[i].set_title(col)
     ax[i].tick_params(axis='x', labelrotation=90)  # Rotar las etiquetas del eje x
 plt.show()
+####### ANALISIS UNIVARIADO
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16,8))  # Ajustar el tamaño de la figura
+fig.subplots_adjust(hspace=0.25)
+for i, col in enumerate(col_num):
+    bplt=sns.boxplot(x='Compra del producto',y=col,data=data,ax=ax[i])
+    ax[i].set_xlabel('Compra del producto')
+    ax[i].set_title(col)
+plt.show()
+
+
+
 
 
 
