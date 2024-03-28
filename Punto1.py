@@ -197,52 +197,6 @@ plt.ylabel('Verdadero')
 plt.show()
 
 
-# Reducción de dimensionalidad a 3D
-pca = PCA(n_components=3)
-X_train_3d = pca.fit_transform(X_train)
-
-# Entrenar el modelo SVM kernel RBF
-svm_modelrbf = SVC(kernel='rbf')
-svm_modelrbf.fit(X_train_3d, y_train)
-
-# Crear una malla para el espacio 3D
-x_min, x_max = X_train_3d[:, 0].min() - 1, X_train_3d[:, 0].max() + 1
-y_min, y_max = X_train_3d[:, 1].min() - 1, X_train_3d[:, 1].max() + 1
-z_min, z_max = X_train_3d[:, 2].min() - 1, X_train_3d[:, 2].max() + 1
-xx, yy, zz = np.meshgrid(np.arange(x_min, x_max, 0.1),
-                         np.arange(y_min, y_max, 0.1),
-                         np.arange(z_min, z_max, 0.1))
-
-# Aplanar las matrices xx, yy, y zz para hacerlas 2D
-flat_xx = xx.ravel()
-flat_yy = yy.ravel()
-flat_zz = zz.ravel()
-
-# Predicción para cada punto en la malla
-Z = svm_modelrbf.predict(np.c_[flat_xx, flat_yy, flat_zz])
-
-# Reformar Z para que sea 2D
-Z = Z.reshape(xx.shape)
-
-# Visualización en 3D
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-
-# Scatter plot de los datos
-ax.scatter(X_train_3d[:, 0], X_train_3d[:, 1], X_train_3d[:, 2], c=y_train, cmap='coolwarm', s=50, edgecolors='k')
-
-# Superficie de decisión
-ax.plot_surface(xx, yy, Z, alpha=0.5)
-
-ax.set_xlabel('Componente Principal 1')
-ax.set_ylabel('Componente Principal 2')
-ax.set_zlabel('Predicción')  # Cambiamos la etiqueta del eje z
-ax.set_title('Hiperplano de Decisión de SVM (RBF Kernel) en 3D')
-plt.show()
-
-
-
-
 
 
 
