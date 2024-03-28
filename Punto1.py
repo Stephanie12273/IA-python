@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # Importar archivo csv 
 data=pd.read_csv('Archivos\SVM.csv')
-#print(datos)
 
 #Funcion para graficar tasas de conversion 
 def graficar_tasas_conversion(var_predictora, var_predecir, type='line', order=None):
@@ -12,9 +11,6 @@ def graficar_tasas_conversion(var_predictora, var_predecir, type='line', order=N
     # agrupación (groupby), calcular tasa de conversión (mean), multiplicarla por 100
     grupo = data.groupby(x)[y].mean() * 100
     grupo = grupo.rename('tasa_conv').reset_index()
-
-    
-
     if type == 'line':  #rangos continuos
         plt.figure(figsize=(10, 6))
         sns.lineplot(x=var_predictora, y='tasa_conv', data=grupo)
@@ -83,7 +79,9 @@ data.loc[(data['Tiempo en la página']>=80),'grupos de tiempo']=">=80"
 graficar_tasas_conversion('grupos de tiempo','Compra del producto',type='bar')
 # graficar tasas de conversion Tiempo en la página y Compra del producto
 graficar_tasas_conversion('Agregación al carrito','Compra del producto',type='bar')
-##Creamos subgrupos de accesos a la pagina y calculamos la tasa de conversion para cada caso
+
+
+
 
 
     
