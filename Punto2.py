@@ -101,3 +101,16 @@ if __name__ == "__main__":
     plt.ylabel('True labels')
     plt.title('Confusion Matrix')
     plt.show()
+
+    # Definir las métricas y sus valores
+    metrics = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
+    values = [accuracy, precision, recall, f1]
+
+    # Crear el gráfico de barras
+    plt.figure(figsize=(10, 6))
+    plt.bar(metrics, values, color=['blue', 'green', 'orange', 'red'])
+    plt.xlabel('Metrics')
+    plt.ylabel('Score')
+    plt.title('Model Evaluation Metrics')
+    plt.ylim(0, 1)  # Establecer el límite del eje y entre 0 y 1
+    plt.show()
