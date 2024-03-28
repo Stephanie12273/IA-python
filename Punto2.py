@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
@@ -51,6 +52,9 @@ if __name__ == "__main__":
     print("Recall:", recall)
     print("F1 Score:", f1)
     print("Confusion Matrix:\n", confusion_mat)
+
+
+    # Visualización que vamos a enviar al POWERBI
 
     # Visualización de la distribución de características
     sns.set(style="whitegrid")
@@ -113,4 +117,24 @@ if __name__ == "__main__":
     plt.ylabel('Score')
     plt.title('Model Evaluation Metrics')
     plt.ylim(0, 1)  # Establecer el límite del eje y entre 0 y 1
+    plt.show()
+
+    # Seleccionar una muestra aleatoria de clientes del conjunto de prueba
+    sample_size = 30
+    sample_indices = np.random.choice(len(churn_probabilities), size=sample_size, replace=False)
+    sample_probabilities = churn_probabilities[sample_indices]
+
+    # Crear un gráfico de barras horizontal
+    plt.figure(figsize=(10, 6))
+
+    # Iterar sobre las probabilidades de churn
+    for i, prob in enumerate(sample_probabilities):
+        color = 'red' if prob > 0.5 else 'skyblue'  # Colorear en rojo si la probabilidad es mayor al 50%, de lo contrario en azul claro
+        plt.barh(i, prob, color=color)
+    
+    plt.xlabel('Probabilidad de Churn')
+    plt.ylabel('Cliente')
+    plt.title('Probabilidad de Churn para una Muestra de Clientes')
+    plt.yticks(range(sample_size), [f'Cliente {i+1}' for i in range(sample_size)])
+    plt.gca().invert_yaxis()  # Invertir el eje y para que el cliente con la probabilidad más alta esté en la parte superior
     plt.show()
