@@ -104,7 +104,7 @@ model_3d.fit(X_train_3d, y_train_3d)
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 # Coloreamos los puntos basados en su clasificación real
-ax.scatter(X_train_3d[:, 0], X_train_3d[:, 1], X_train_3d[:, 2], c=y_train_3d, cmap='coolwarm', marker='o')
+ax.scatter(X_train_3d[:, 0], X_train_3d[:, 1], X_train_3d[:, 2], c=y_train_3d, cmap='viridis', marker='o')
 ax.set_xlabel('Acceso a la página')
 ax.set_ylabel('Tiempo en la página')
 ax.set_zlabel('Agregación al carrito')
