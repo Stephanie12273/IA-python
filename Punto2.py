@@ -35,9 +35,9 @@ if __name__ == "__main__":
     churn_probabilities_percentage = churn_probabilities * 100
 
     # Mostrar el resultado del churn en porcentaje
-    print("Probabilidad de churn (%):")
-    for prob in churn_probabilities_percentage:
-        print("{:.2f}%".format(prob))
+    #print("Probabilidad de churn (%):")
+    #for prob in churn_probabilities_percentage:
+    #    print("{:.2f}%".format(prob))
 
     # Evaluación del Modelo
     y_pred = clf.predict(X_test)
