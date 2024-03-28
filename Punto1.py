@@ -1,214 +1,115 @@
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn.decomposition import PCA
-import numpy as np
+from sklearn.metrics import accuracy_score, recall_score, f1_score, confusion_matrix
 
 # Importar archivo csv 
-data=pd.read_csv('Archivos\SVM.csv')
+data = pd.read_csv('Archivos/SVM.csv')
 
-#Funcion para graficar tasas de conversion 
+# Funcion para graficar tasas de conversion 
 def graficar_tasas_conversion(var_predictora, var_predecir, type='line', order=None):
     x, y = var_predictora, var_predecir
-    # agrupación (groupby), calcular tasa de conversión (mean), multiplicarla por 100
     grupo = data.groupby(x)[y].mean() * 100
     grupo = grupo.rename('tasa_conv').reset_index()
-    if type == 'line':  #rangos continuos
+    if type == 'line':
         plt.figure(figsize=(10, 6))
         sns.lineplot(x=var_predictora, y='tasa_conv', data=grupo)
-        plt.grid()
-        plt.xlabel(var_predictora)
-        plt.ylabel('Tasa de conversión (%)')
-        plt.title('Tasa de conversión en función de ' + var_predictora)
-        plt.show()
-    elif type == 'bar': #Datos categoricos
+    elif type == 'bar':
         plt.figure(figsize=(10, 6))
         sns.barplot(x=var_predictora, y='tasa_conv', data=grupo, order=order)
-        plt.grid()
-        plt.xlabel(var_predictora)
-        plt.ylabel('Tasa de conversión (%)')
-        plt.title('Tasa de conversión en función de ' + var_predictora)
-        plt.show()
-    elif type == 'scatter': #Datos categoricos
+    elif type == 'scatter':
         plt.figure(figsize=(10, 6))
         sns.scatterplot(x=var_predictora, y='tasa_conv', data=grupo)
-        plt.grid()
-        plt.xlabel(var_predictora)
-        plt.ylabel('Tasa de conversión (%)')
-        plt.title('Tasa de conversión en función de ' + var_predictora)
-        plt.show()
+    plt.grid()
+    plt.xlabel(var_predictora)
+    plt.ylabel('Tasa de conversión (%)')
+    plt.title('Tasa de conversión en función de ' + var_predictora)
+    plt.show()
 
-######### ANALISIS EXPLORATORIO #############
-####### ANALISIS DE CADA VARIABLE DE MANERA INDIVIDUAL
-print(data.head(5))
-print (data.info()) #Tipo de variable para cada columna 
-print (data.describe()) #Extrae variables estadisticas descriptivas 
-#Histogramas que muestren el comportamiento del Acceso a la pagina y el Tiempo en la pagina 
+# ANALISIS EXPLORATORIO
+print(data.info()) 
+print(data.describe()) 
+
 col_num = ['Acceso a la página', 'Tiempo en la página']
-fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10,6))  # Ajustar el tamaño de la figura
+fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 6))
 fig.subplots_adjust(hspace=0.5)
-# Definir los pasos para cada columna
 steps = {'Acceso a la página': 1, 'Tiempo en la página': 2} 
 for i, col in enumerate(col_num):
     sns.histplot(x=col, data=data, ax=ax[i], kde=True)
     ax[i].set_title(col)
-    ax[i].set_xticks(range(0, int(data[col].max()) + 1, steps[col]))  # Establecer los ticks del eje x con los pasos definidos
-    ax[i].set_xticklabels(ax[i].get_xticks(), rotation=90)  # Rotar las etiquetas del eje x
+    ax[i].set_xticks(range(0, int(data[col].max()) + 1, steps[col]))
+    ax[i].set_xticklabels(ax[i].get_xticks(), rotation=90)
 plt.show()
-#grafico de barras para conocer comportamiento de Agregacion al carrito y compra de producto
-col_num1=['Agregación al carrito','Compra del producto']
-fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10,6))  # Ajustar el tamaño de la figura
+
+col_num1=['Agregación al carrito', 'Compra del producto']
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 6))
 fig.subplots_adjust(hspace=0.5)
 for i, col in enumerate(col_num1):
     sns.countplot(x=col, data=data, ax=ax[i])
     ax[i].set_title(col)
-    ax[i].tick_params(axis='x', labelrotation=90)  # Rotar las etiquetas del eje x
+    ax[i].tick_params(axis='x', labelrotation=90)
 plt.show()
-####### ANALISIS UNIVARIADO
-#Relacion entre la variable numerica y la variable a predecir 
-# graficar tasas de conversion Acceso a la página y Compra del producto
-graficar_tasas_conversion('Acceso a la página','Compra del producto', type='line')
-#Creamos subgrupos de accesos a la pagina y calculamos la tasa de conversion para cada caso
-data.loc[:,'grupos de acceso']="0-20"
-data.loc[(data['Acceso a la página']>20),'grupos de acceso']=">20"
-graficar_tasas_conversion('grupos de acceso','Compra del producto',type='bar')
-# graficar tasas de conversion Tiempo en la página y Compra del producto
-graficar_tasas_conversion('Tiempo en la página','Compra del producto',type='scatter')
-##Creamos subgrupos de accesos a la pagina y calculamos la tasa de conversion para cada caso
-data.loc[:,'grupos de tiempo']="0-40"
-data.loc[(data['Tiempo en la página']>=40)&(data['Tiempo en la página']<80),'grupos de tiempo']="40-80"
-data.loc[(data['Tiempo en la página']>=80),'grupos de tiempo']=">=80"
-graficar_tasas_conversion('grupos de tiempo','Compra del producto',type='bar')
-# graficar tasas de conversion Tiempo en la página y Compra del producto
-graficar_tasas_conversion('Agregación al carrito','Compra del producto',type='bar')
 
-########## NORMALIZACION Y AJUSTE DE DATOS ##############
-# Dividir los datos en características (predictoras) y variable objetivo
+# ANALISIS UNIVARIADO
+graficar_tasas_conversion('Acceso a la página', 'Compra del producto', type='line')
+data['grupos de acceso'] = pd.cut(data['Acceso a la página'], bins=[0, 20, float('inf')], labels=['0-20', '>20'])
+graficar_tasas_conversion('grupos de acceso', 'Compra del producto', type='bar')
+graficar_tasas_conversion('Tiempo en la página', 'Compra del producto', type='scatter')
+data['grupos de tiempo'] = pd.cut(data['Tiempo en la página'], bins=[0, 40, 80, float('inf')], labels=['0-40', '40-80', '>=80'])
+graficar_tasas_conversion('grupos de tiempo', 'Compra del producto', type='bar')
+graficar_tasas_conversion('Agregación al carrito', 'Compra del producto', type='bar')
+
+# NORMALIZACION Y AJUSTE DE DATOS
 x1 = data.drop(['Compra del producto', 'grupos de acceso', 'grupos de tiempo'], axis=1)
-y1 = data['Compra del producto']  # Variable objetivo
-# Normalizar las características
+y1 = data['Compra del producto']  
 scaler = StandardScaler()
 x1_normalized = scaler.fit_transform(x1)
-print(x1_normalized)
-# Dividir los datos normalizados en conjuntos de entrenamiento y prueba
 X_train, X_test, y_train, y_test = train_test_split(x1_normalized, y1, test_size=0.2, random_state=42)
-#imprimir los conjunto de datos de entrenamiento y prueba
-print("Caracteristicas normalizada(entrenamiento):",X_train)
-print("Compra del carrito(entrenamiento):",y_train)
-print("Caracteristicas normalizada(prueba):",X_test)
-print("Compra del carrito(prueba):",y_test)
-# Entrenar el modelo SVM kernel lineal
-svm_model = SVC(kernel='linear')
-svm_model.fit(X_train, y_train)
-# Predicciones en el conjunto de prueba
-y_pred = svm_model.predict(X_test)
-# Calcular métricas de rendimiento
-accuracy = accuracy_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-print("Accuracy lineal:", accuracy)
-print("Recall lineal:", recall)
-print("F1 Score lineal:", f1)
-# Mostrar la matriz de confusión
-conf_matrix = confusion_matrix(y_test, y_pred)
-print("Confusion Matrix:")
-print(conf_matrix)
-#visualizar matriz de confusion
-plt.figure(figsize=(10, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
-plt.title('Matriz de Confusión')
-plt.xlabel('Predicción')
-plt.ylabel('Verdadero')
+
+# MODELOS SVM
+modelos = {'Lineal': SVC(kernel='linear'), 'Polinomial': SVC(kernel='poly'), 'Sigmoide': SVC(kernel='sigmoid'), 'RBF': SVC(kernel='rbf')}
+for nombre, modelo in modelos.items():
+    modelo.fit(X_train, y_train)
+    y_pred = modelo.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    print(f"Accuracy {nombre}: {accuracy}, Recall {nombre}: {recall}, F1 Score {nombre}: {f1}")
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    print(f"Confusion Matrix {nombre}:")
+    print(conf_matrix)
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['No Compra', 'Compra'], yticklabels=['No Compra', 'Compra'])
+    plt.title(f'Matriz de Confusión {nombre}')
+    plt.xlabel('Predicción')
+    plt.ylabel('Verdadero')
+    plt.show()
+
+# Seleccionando solo tres características para la visualización
+X_3d = data[['Acceso a la página', 'Tiempo en la página', 'Agregación al carrito']]
+y_3d = data['Compra del producto']
+# Normalizando las características
+scaler = StandardScaler()
+X_3d_scaled = scaler.fit_transform(X_3d)
+# Dividiendo el conjunto de datos en entrenamiento y prueba
+X_train_3d, X_test_3d, y_train_3d, y_test_3d = train_test_split(X_3d_scaled, y_3d, test_size=0.2, random_state=42)
+# Entrenando el modelo SVM
+model_3d = SVC(kernel='linear')
+model_3d.fit(X_train_3d, y_train_3d)
+##VISUALIZACION
+# Creamos la figura 3D
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+# Coloreamos los puntos basados en su clasificación real
+ax.scatter(X_train_3d[:, 0], X_train_3d[:, 1], X_train_3d[:, 2], c=y_train_3d, cmap='coolwarm', marker='o')
+ax.set_xlabel('Acceso a la página')
+ax.set_ylabel('Tiempo en la página')
+ax.set_zlabel('Agregación al carrito')
+plt.title('Visualización 3D de las Clasificaciones SVM')
 plt.show()
-# Entrenar el modelo SVM kernel poly
-svm_modelpoly = SVC(kernel='poly')
-svm_modelpoly.fit(X_train, y_train)
-# Predicciones en el conjunto de prueba
-y_pred = svm_modelpoly.predict(X_test)
-# Calcular métricas de rendimiento
-accuracyPoly = accuracy_score(y_test, y_pred)
-recallPoly = recall_score(y_test, y_pred)
-f1Poly = f1_score(y_test, y_pred)
-print("Accuracy poly:", accuracyPoly)
-print("Recall poly:", recallPoly)
-print("F1 Score poly:", f1Poly)
-# Mostrar la matriz de confusión
-conf_matrixPoly = confusion_matrix(y_test, y_pred)
-print("Confusion Matrix poly:")
-print(conf_matrixPoly)
-#visualizar matriz de confusion
-plt.figure(figsize=(10, 6))
-sns.heatmap(conf_matrixPoly, annot=True, fmt='d', cmap='Blues')
-plt.title('Matriz de Confusión poly')
-plt.xlabel('Predicción')
-plt.ylabel('Verdadero')
-plt.show()
-# Entrenar el modelo SVM kernel sigmoidal
-svm_modelsig = SVC(kernel='sigmoid')
-svm_modelsig.fit(X_train, y_train)
-# Predicciones en el conjunto de prueba
-y_pred = svm_modelsig.predict(X_test)
-# Calcular métricas de rendimiento
-accuracysig = accuracy_score(y_test, y_pred)
-recallsig = recall_score(y_test, y_pred)
-f1sig = f1_score(y_test, y_pred)
-print("Accuracy sig:", accuracysig)
-print("Recall sig:", recallsig)
-print("F1 Score sig:", f1sig)
-# Mostrar la matriz de confusión
-conf_matrixsig = confusion_matrix(y_test, y_pred)
-print("Confusion Matrix sig:")
-print(conf_matrixsig)
-#visualizar matriz de confusion
-plt.figure(figsize=(10, 6))
-sns.heatmap(conf_matrixsig, annot=True, fmt='d', cmap='Blues')
-plt.title('Matriz de Confusión sig')
-plt.xlabel('Predicción')
-plt.ylabel('Verdadero')
-plt.show()
-
-# Entrenar el modelo SVM kernel RBF
-svm_modelrbf = SVC(kernel='rbf')
-svm_modelrbf.fit(X_train, y_train)
-# Predicciones en el conjunto de prueba
-y_pred = svm_modelrbf.predict(X_test)
-# Calcular métricas de rendimiento
-accuracyrbf = accuracy_score(y_test, y_pred)
-recallrbf = recall_score(y_test, y_pred)
-f1rbf = f1_score(y_test, y_pred)
-print("Accuracy rbf:", accuracyrbf)
-print("Recall rbf:", recallrbf)
-print("F1 Score rbf:", f1rbf)
-# Mostrar la matriz de confusión
-conf_matrixrbf = confusion_matrix(y_test, y_pred)
-print("Confusion Matrix rbf:")
-print(conf_matrixrbf)
-#visualizar matriz de confusion
-plt.figure(figsize=(10, 6))
-sns.heatmap(conf_matrixrbf, annot=True, fmt='d', cmap='Blues')
-plt.title('Matriz de Confusión rbf')
-plt.xlabel('Predicción')
-plt.ylabel('Verdadero')
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
 
 
 
