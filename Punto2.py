@@ -22,7 +22,7 @@ if __name__ == "__main__":
     dt_features_df = pd.DataFrame(dt_features_normalized, columns=dt_features.columns)
     
     # Dividir el conjunto de datos en conjuntos de entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(dt_features_df, dt_target, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(dt_features_df, dt_target, test_size=0.3, random_state=42) 
 
     # Modelado de Red Neuronal
     clf = MLPClassifier(hidden_layer_sizes=(100,), max_iter=100, activation='relu', solver='adam', random_state=42)
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         plt.title(f'Distribución de {feature}')
         plt.xlabel(feature)
         plt.ylabel('Frecuencia')
-        plt.show()
+    #    plt.show()
 
     # Visualización de relaciones entre características y variable objetivo (Churn)
     sns.set(style="whitegrid")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         plt.title(f'Relación entre {feature} y Churn')
         plt.xlabel(feature)
         plt.ylabel('Churn')
-        plt.show()
+        #plt.show()
 
     # Diagrama de barras
     for feature in dt_features_df.columns:
@@ -83,20 +83,20 @@ if __name__ == "__main__":
         plt.title(f'Distribución de {feature} por Churn')
         plt.xlabel('Churn')
         plt.ylabel(feature)
-        plt.show()
+        #plt.show()
 
     # Heatmap de correlación
     plt.figure(figsize=(10, 8))
     sns.heatmap(pd.concat([dt_features_df, dt_target], axis=1).corr(), annot=True, cmap='coolwarm')
     plt.title('Heatmap de correlación entre características y Churn')
-    plt.show()
+    #plt.show()
 
     # Visualización de la convergencia de la función de pérdida
     plt.plot(clf.loss_curve_)
     plt.title('Convergencia de la función de pérdida')
     plt.xlabel('Iteraciones')
     plt.ylabel('Pérdida')
-    plt.show()
+    #plt.show()
 
     # Visualizar la matriz de confusión
     plt.figure(figsize=(8, 6))
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     plt.xlabel('Predicted labels')
     plt.ylabel('True labels')
     plt.title('Confusion Matrix')
-    plt.show()
+    #plt.show()
 
     # Definir las métricas y sus valores
     metrics = ['Accuracy', 'Precision', 'Recall', 'F1 Score']
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     plt.ylabel('Score')
     plt.title('Model Evaluation Metrics')
     plt.ylim(0, 1)  # Establecer el límite del eje y entre 0 y 1
-    plt.show()
+    #plt.show()
 
     # Seleccionar una muestra aleatoria de clientes del conjunto de prueba
     sample_size = 30
@@ -137,4 +137,7 @@ if __name__ == "__main__":
     plt.title('Probabilidad de Churn para una Muestra de Clientes')
     plt.yticks(range(sample_size), [f'Cliente {i+1}' for i in range(sample_size)])
     plt.gca().invert_yaxis()  # Invertir el eje y para que el cliente con la probabilidad más alta esté en la parte superior
+    
+    # Mostrar todas las graficas 
     plt.show()
+    plt.close('all')
